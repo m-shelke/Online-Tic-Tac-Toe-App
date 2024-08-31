@@ -1,5 +1,6 @@
 package com.example.onlinetictactoeappkt
 
+import android.content.DialogInterface
 import android.graphics.Color
 import android.media.MediaParser
 import android.media.MediaPlayer
@@ -9,9 +10,11 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import kotlin.system.exitProcess
 
 var playreTurn = true
 class GamePlayActivity : AppCompatActivity() {
@@ -134,12 +137,137 @@ class GamePlayActivity : AppCompatActivity() {
           but.isEnabled = false
           Handler().postDelayed(Runnable{audio.release()},200)
           val checkWinner = checkWinner()
+
+          if (checkWinner == 1){
+              Handler().postDelayed(Runnable{ reset() },2000)
+          }else if (checksinglePlayer){
+              Handler().postDelayed(Runnable{ robot() },5000)
+          }else{
+              activeUser = 1
+          }
+      }else{
+          but.text = "O"
+          audio.start()
+          but.setTextColor(Color.parseColor("#FF000000"))
+          activeUser = 1
+          player2.add(cellID)
+          empthyCells.add(cellID)
+          Handler().postDelayed(Runnable{ audio.release() },200)
+          but.isEnabled = false
+
+          val checkWinner = checkWinner()
+          if (checkWinner  == 1){
+              Handler().postDelayed(Runnable{ reset() },4000)
+          }
       }
 
     }
 
-    private fun checkWinner(): Any {
-        return true
+    private fun robot() {
+
+    }
+
+    private fun checkWinner(): Int {
+        val audio = MediaPlayer.create(this,R.raw.winning_sound)
+
+        if ((player1.contains(1) && player1.contains(2) && player1.contains(3)) ||
+            (player1.contains(4) && player1.contains(5) && player1.contains(6)) ||
+            (player1.contains(7) && player1.contains(8) && player1.contains(9)) ||
+            (player1.contains(1) && player1.contains(4) && player1.contains(7)) ||
+            (player1.contains(2) && player1.contains(5) && player1.contains(8)) ||
+            (player1.contains(3) && player1.contains(6) && player1.contains(9)) ||
+            (player1.contains(1) && player1.contains(5) && player1.contains(9)) ||
+            (player1.contains(3) && player1.contains(5) && player1.contains(7))
+
+            ){
+            player1Count += 1
+            buttonDisable()
+            audio.start()
+            disableReset()
+            Handler().postDelayed(Runnable{ audio.release() },4000)
+
+            val build = AlertDialog.Builder(this)
+            build.setTitle("Game Over")
+            build.setMessage("Player 1 Wins \n\n "+"Want To Play Again..?")
+            build.setIcon(R.drawable.ic_launcher_foreground)
+
+            build.setPositiveButton("Yeah",DialogInterface.OnClickListener { dialog, which ->
+                reset()
+                audio.release()
+            })
+
+            build.setNegativeButton("No",DialogInterface.OnClickListener { dialog, which ->
+                audio.release()
+                exitProcess(1)
+            })
+
+            Handler().postDelayed(Runnable{ build.show()},2000)
+            return 1
+
+        }else if ((player2.contains(1) && player2.contains(2) && player2.contains(3)) ||
+            (player2.contains(4) && player2.contains(5) && player2.contains(6)) ||
+            (player2.contains(7) && player2.contains(8) && player2.contains(9)) ||
+            (player2.contains(1) && player2.contains(4) && player2.contains(7)) ||
+            (player2.contains(2) && player2.contains(5) && player2.contains(8)) ||
+            (player2.contains(3) && player2.contains(6) && player2.contains(9)) ||
+            (player2.contains(1) && player2.contains(5) && player2.contains(9)) ||
+            (player2.contains(3) && player2.contains(5) && player2.contains(7)))
+        {
+            player2Count +=1
+            buttonDisable()
+            disableReset()
+
+            Handler().postDelayed(Runnable{ audio.release() },4000)
+
+            val build = AlertDialog.Builder(this)
+            build.setTitle("Game Over")
+            build.setMessage("Player 2 Wins \n\n "+"Want To Play Again..?")
+            build.setIcon(R.drawable.ic_launcher_foreground)
+
+            build.setPositiveButton("Yeah",DialogInterface.OnClickListener { dialog, which ->
+                reset()
+                audio.release()
+            })
+
+            build.setNegativeButton("No",DialogInterface.OnClickListener { dialog, which ->
+                audio.release()
+                exitProcess(1)
+            })
+
+            Handler().postDelayed(Runnable{ build.show()},2000)
+            return 1
+
+        }else if (empthyCells.contains(1) && empthyCells.contains(2) && empthyCells.contains(3)
+            && empthyCells.contains(4) && empthyCells.contains(5) && empthyCells.contains(6)
+            && empthyCells.contains(7) && empthyCells.contains(8) && empthyCells.contains(9))
+        {
+
+        val build = AlertDialog.Builder(this)
+        build.setTitle("Game Draw")
+        build.setMessage("Game Tie \n\n "+"Want To Play Again..?")
+        build.setIcon(R.drawable.ic_launcher_foreground)
+
+        build.setPositiveButton("Yeah",DialogInterface.OnClickListener { dialog, which ->
+            reset()
+        })
+
+        build.setNegativeButton("No",DialogInterface.OnClickListener { dialog, which ->
+            exitProcess(1)
+        })
+            build.show()
+            return 1
+
+        }
+        return 0
+    }
+
+    private fun disableReset() {
+
+    }
+
+
+    private fun buttonDisable() {
+
     }
 
 }
