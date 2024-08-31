@@ -26,7 +26,7 @@ class GamePlayActivity : AppCompatActivity() {
     lateinit var BTN2:Button
     lateinit var BTN3:Button
     lateinit var BTN4:Button
-    lateinit var BTN5:Button
+    private lateinit var BTN5:Button
     lateinit var BTN6:Button
     lateinit var BTN7:Button
     lateinit var BTN8:Button
@@ -125,7 +125,10 @@ class GamePlayActivity : AppCompatActivity() {
         }
     }
 
+
+
     private fun playNow(but: Button, cellID: Int) {
+
       val audio = MediaPlayer.create(this,R.raw.btn_clicked)
 
       if (activeUser == 1){
@@ -143,7 +146,7 @@ class GamePlayActivity : AppCompatActivity() {
           }else if (checksinglePlayer){
               Handler().postDelayed(Runnable{ robot() },5000)
           }else{
-              activeUser = 1
+              activeUser = 2
           }
       }else{
           but.text = "O"
@@ -164,6 +167,38 @@ class GamePlayActivity : AppCompatActivity() {
     }
 
     private fun robot() {
+        val random = (1..9).random()
+
+        if (empthyCells.contains(random)){
+            val buttonSelected = when(random){
+                1->BTN1
+                2->BTN2
+                3->BTN3
+                4->BTN4
+                5->BTN5
+                6->BTN6
+                7->BTN7
+                8->BTN8
+                9->BTN9
+                else -> {
+                    BTN1
+                }
+            }
+            empthyCells.add(random)
+            val audio = MediaPlayer.create(this,R.raw.btn_clicked)
+            audio.start()
+
+            Handler().postDelayed(Runnable{ audio.release() },500)
+            buttonSelected.text = "O"
+            buttonSelected.setTextColor(Color.parseColor("#FFFFFFFF"))
+            player2.add(random)
+            buttonSelected.isEnabled = false
+
+            var checkWinner = checkWinner()
+            if (checkWinner == 1){
+                Handler().postDelayed(Runnable{ reset() },2000)
+            }
+        }
 
     }
 
@@ -261,13 +296,43 @@ class GamePlayActivity : AppCompatActivity() {
         return 0
     }
 
-    private fun disableReset() {
+    private fun buttonDisable() {
+        player1.clear()
+        player2.clear()
+        empthyCells.clear()
+        activeUser = 1
 
+        for (i in 1..9){
+            var buttonSelected :Button ?
+            buttonSelected = when(i){
+
+                1->BTN1
+                2->BTN2
+                3->BTN3
+                4->BTN4
+                5->BTN5
+                6->BTN6
+                7->BTN7
+                8->BTN8
+                9->BTN9
+                else -> {
+                    BTN1
+                }
+            }
+
+            buttonSelected.isEnabled
+            buttonSelected.text = ""
+            player1TV.text = "Player 1 : $player1Count"
+            player2TV.text = "Player 2 : $player2Count"
+        }
     }
 
 
-    private fun buttonDisable() {
 
+
+    private fun disableReset() {
+        resetBTN.isEnabled = false
+        Handler().postDelayed(Runnable{ resetBTN.isEnabled = true},2200)
     }
 
 }
